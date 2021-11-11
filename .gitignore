@@ -1,0 +1,13 @@
+*.pyc
+.venv
+
+
+dist/
+.idea
+.vscode
+.coverage
+.testmondata
+
+.env.dev
+.env.staging
+.env.production
