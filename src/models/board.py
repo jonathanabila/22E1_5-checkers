@@ -1,5 +1,7 @@
-from constants import COLS, RED, ROWS, WHITE
+from constants import BLACK, COLS, RED, ROWS, SQUARE_SIZE, WHITE
 from models.pieces import Piece
+
+import pygame
 
 
 class Board:
@@ -38,6 +40,25 @@ class Board:
 
     def get_valid_moves(self, piece):
         ...
+
+    @staticmethod
+    def draw_squares(window):
+        window.fill(BLACK)
+        for row in range(ROWS):
+            for col in range(row % 2, COLS, 2):
+                pygame.draw.rect(
+                    window,
+                    RED,
+                    (row * SQUARE_SIZE, col * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE),
+                )
+
+    def draw(self, window):
+        self.draw_squares(window)
+        for row in range(ROWS):
+            for column in range(COLS):
+                piece = self.board[row][column]
+                if piece is not None:
+                    piece.draw(window)
 
     def create_board(self):
         for row in range(ROWS):

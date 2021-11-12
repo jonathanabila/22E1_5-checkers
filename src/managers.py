@@ -1,5 +1,7 @@
-from constants import RED, WHITE
+from constants import BLUE, RED, SQUARE_SIZE, WHITE
 from models.board import Board
+
+import pygame
 
 
 class GameManager:
@@ -52,5 +54,20 @@ class GameManager:
 
         return False
 
+    def draw_valid_moves(self, moves):
+        for move in moves:
+            row, col = move
+            pygame.draw.circle(
+                self.window,
+                BLUE,
+                (
+                    col * SQUARE_SIZE + SQUARE_SIZE // 2,
+                    row * SQUARE_SIZE + SQUARE_SIZE // 2,
+                ),
+                15,
+            )
+
     def update(self):
-        ...
+        self.board.draw(self.window)
+        self.draw_valid_moves(self.valid_moves)
+        pygame.display.update()

@@ -40,7 +40,7 @@ class Piece:
 
     def draw(self, window):
         radius = SQUARE_SIZE // 2 - PADDING
-        pygame.draw.circle(window, GREY, (self.x, self.y), radius, GREY + OUTLINE)
+        pygame.draw.circle(window, GREY, (self.x, self.y), radius + OUTLINE)
         pygame.draw.circle(window, self.color, (self.x, self.y), radius)
 
         if self.king is True:
