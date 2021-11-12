@@ -38,8 +38,110 @@ class Board:
                 else:
                     self.white_left -= 1
 
-    def get_valid_moves(self, piece):
-        ...
+    def _traverse_left(self, start, stop, step, color, left, skipped=None):
+        moves = {}
+        last = []
+        for r in range(start, stop, step):
+            if left < 0:
+                break
+
+            current = self.board[r][left]
+            if current is None:
+                if skipped and not last:
+                    break
+                elif skipped:
+                    moves[(r, left)] = last + skipped
+                else:
+                    moves[(r, left)] = last
+
+                if last:
+                    if step == -1:
+                        row = max(r - 4, 0)
+                    else:
+                        row = min(r + 4, ROWS)
+                    moves.update(
+                        self._traverse_left(
+                            r + step, row, step, color, left - 1, skipped=last
+                        )
+                    )
+                    moves.update(
+                        self._traverse_right(
+                            r + step, row, step, color, left + 1, skipped=last
+                        )
+                    )
+                break
+            elif current.color == color:
+                break
+            else:
+                last = [current]
+
+            left -= 1
+
+        return moves
+
+    def _traverse_right(self, start, stop, step, color, right, skipped=None):
+        moves = {}
+        last = []
+        for r in range(start, stop, step):
+            if right >= COLS:
+                break
+
+            current = self.board[r][right]
+            if current is None:
+                if skipped and not last:
+                    break
+                elif skipped:
+                    moves[(r, right)] = last + skipped
+                else:
+                    moves[(r, right)] = last
+
+                if last:
+                    if step == -1:
+                        row = max(r - 4, 0)
+                    else:
+                        row = min(r + 4, ROWS)
+                    moves.update(
+                        self._traverse_left(
+                            r + step, row, step, color, right - 1, skipped=last
+                        )
+                    )
+                    moves.update(
+                        self._traverse_right(
+                            r + step, row, step, color, right + 1, skipped=last
+                        )
+                    )
+                break
+            elif current.color == color:
+                break
+            else:
+                last = [current]
+
+            right += 1
+
+        return moves
+
+    def get_valid_moves(self, piece: Piece):
+        valid_moves = {}
+        left, right, row = piece.column - 1, piece.column + 1, piece.row
+
+        if piece.color == RED or piece.king is True:
+            left = self._traverse_left(row - 1, max(row - 4, -1), -1, piece.color, left)
+            right = self._traverse_right(
+                row - 1, max(row - 4, -1), -1, piece.color, right
+            )
+
+        elif piece.color == WHITE or piece.king is True:
+            left = self._traverse_left(
+                row + 1, min(row + 4, ROWS), 1, piece.color, left
+            )
+            right = self._traverse_right(
+                row + 1, min(row + 4, ROWS), 1, piece.color, right
+            )
+
+        valid_moves.update(left)
+        valid_moves.update(right)
+
+        return valid_moves
 
     @staticmethod
     def draw_squares(window):
