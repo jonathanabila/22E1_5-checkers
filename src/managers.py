@@ -24,7 +24,7 @@ class GameManager:
         piece = self.board.get_piece(row, column)
 
         if (
-            self.selected_piece is True
+            self.selected_piece is not None
             and piece is None
             and (row, column) in self.valid_moves
         ):
@@ -40,9 +40,9 @@ class GameManager:
         return False
 
     def select(self, row, column):
-        if self.selected_piece is True:
-            result = self._move(row, column)
-            if not result:
+        if self.selected_piece is not None:
+            is_moved = self._move(row, column)
+            if is_moved is True:
                 self.selected_piece = None
                 self.select(row, column)
 
@@ -66,6 +66,9 @@ class GameManager:
                 ),
                 15,
             )
+
+    def get_winner(self):
+        return self.board.winner()
 
     def update(self):
         self.board.draw(self.window)

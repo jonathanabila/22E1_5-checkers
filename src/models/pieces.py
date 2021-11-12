@@ -44,7 +44,7 @@ class Piece:
         pygame.draw.circle(window, self.color, (self.x, self.y), radius)
 
         if self.king is True:
-            pygame.draw.circle(
+            window.blit(
                 CROWN,
                 (self.x - CROWN.get_width() // 2, self.y - CROWN.get_height() // 2),
             )

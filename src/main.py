@@ -22,14 +22,18 @@ def main():
     while run:
         clock.tick(FPS)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+        if game.get_winner() is not None:
+            print(f"The game finished with: '{game.get_winner()}' as winner!")
+            run = False
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                position = pygame.mouse.get_pos()
-                row, column = get_mouse_position(position)
-                game.select(row, column)
+        event = pygame.event.poll()
+        if event.type == pygame.QUIT:
+            run = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            row, col = get_mouse_position(pos)
+            game.select(row, col)
 
         game.update()
 

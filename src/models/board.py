@@ -1,4 +1,6 @@
-from constants import BLACK, COLS, RED, ROWS, SQUARE_SIZE, WHITE
+from typing import List
+
+from constants import BLACK, COLS, PIECES, RED, ROWS, SQUARE_SIZE, WHITE
 from models.pieces import Piece
 
 import pygame
@@ -9,15 +11,25 @@ class Board:
         self.board = []
         self.create_board()
 
-        self.white_left = self.red_left = 12
+        self.white_left = self.red_left = PIECES
         self.white_kings = self.red_kings = 0
+
+    def winner(self):
+        if self.red_left <= 0:
+            return WHITE
+        elif self.white_left <= 0:
+            return RED
+
+        return None
 
     def get_piece(self, row, column):
         return self.board[row][column]
 
-    def move(self, piece, row, column):
-        self.board[piece.row][piece.col] = self.board[row][column]
-        self.board[row][column] = self.board[piece.row][piece.col]
+    def move(self, piece: Piece, row, column):
+        self.board[piece.row][piece.column], self.board[row][column] = (
+            self.board[row][column],
+            self.board[piece.row][piece.column],
+        )
 
         piece.move(row, column)
 
@@ -28,9 +40,9 @@ class Board:
             if piece.color == RED:
                 self.red_kings += 1
 
-    def remove(self, pieces):
+    def remove(self, pieces: List[Piece]):
         for piece in pieces:
-            row, column = piece.row, piece.col
+            row, column = piece.row, piece.column
             self.board[row][column] = None
             if piece is not None:
                 if piece.color == RED:
@@ -56,9 +68,9 @@ class Board:
 
                 if last:
                     if step == -1:
-                        row = max(r - 4, 0)
+                        row = max(r - 3, 0)
                     else:
-                        row = min(r + 4, ROWS)
+                        row = min(r + 3, ROWS)
                     moves.update(
                         self._traverse_left(
                             r + step, row, step, color, left - 1, skipped=last
@@ -97,9 +109,9 @@ class Board:
 
                 if last:
                     if step == -1:
-                        row = max(r - 4, 0)
+                        row = max(r - 3, 0)
                     else:
-                        row = min(r + 4, ROWS)
+                        row = min(r + 3, ROWS)
                     moves.update(
                         self._traverse_left(
                             r + step, row, step, color, right - 1, skipped=last
@@ -124,22 +136,27 @@ class Board:
         valid_moves = {}
         left, right, row = piece.column - 1, piece.column + 1, piece.row
 
-        if piece.color == RED or piece.king is True:
-            left = self._traverse_left(row - 1, max(row - 4, -1), -1, piece.color, left)
-            right = self._traverse_right(
-                row - 1, max(row - 4, -1), -1, piece.color, right
+        if piece.color == RED or piece.king:
+            valid_left_move = self._traverse_left(
+                row - 1, max(row - 3, -1), -1, piece.color, left
+            )
+            valid_right_move = self._traverse_right(
+                row - 1, max(row - 3, -1), -1, piece.color, right
             )
 
-        elif piece.color == WHITE or piece.king is True:
-            left = self._traverse_left(
-                row + 1, min(row + 4, ROWS), 1, piece.color, left
+            valid_moves.update(valid_left_move)
+            valid_moves.update(valid_right_move)
+
+        if piece.color == WHITE or piece.king:
+            valid_left_move = self._traverse_left(
+                row + 1, min(row + 3, ROWS), 1, piece.color, left
             )
-            right = self._traverse_right(
-                row + 1, min(row + 4, ROWS), 1, piece.color, right
+            valid_right_move = self._traverse_right(
+                row + 1, min(row + 3, ROWS), 1, piece.color, right
             )
 
-        valid_moves.update(left)
-        valid_moves.update(right)
+            valid_moves.update(valid_left_move)
+            valid_moves.update(valid_right_move)
 
         return valid_moves
 
@@ -167,10 +184,10 @@ class Board:
             self.board.append([])
             for column in range(COLS):
                 if column % 2 == (row + 1) % 2:
-                    if row < 4:
+                    if row < 3:
                         piece = Piece(row, column, WHITE)
                         self.board[row].append(piece)
-                    elif row > 5:
+                    elif row > 4:
                         piece = Piece(row, column, RED)
                         self.board[row].append(piece)
                     else:
