@@ -18,3 +18,5 @@ GREY = (128, 128, 128)
 crown_size = (44, 25)
 crown_image = pygame.image.load("assets/crown.png")
 CROWN = pygame.transform.scale(crown_image, crown_size)
+
+FPS = 60
