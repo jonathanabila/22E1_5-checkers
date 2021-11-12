@@ -65,10 +65,10 @@ class Board:
             self.board.append([])
             for column in range(COLS):
                 if column % 2 == (row + 1) % 2:
-                    if row < 3:
+                    if row < 4:
                         piece = Piece(row, column, WHITE)
                         self.board[row].append(piece)
-                    elif row > 4:
+                    elif row > 5:
                         piece = Piece(row, column, RED)
                         self.board[row].append(piece)
                     else:
