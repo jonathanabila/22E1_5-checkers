@@ -7,6 +7,38 @@ class Board:
         self.board = []
         self.create_board()
 
+        self.white_left = self.red_left = 12
+        self.white_kings = self.red_kings = 0
+
+    def get_piece(self, row, column):
+        return self.board[row][column]
+
+    def move(self, piece, row, column):
+        self.board[piece.row][piece.col] = self.board[row][column]
+        self.board[row][column] = self.board[piece.row][piece.col]
+
+        piece.move(row, column)
+
+        if row == ROWS - 1 or row == 0:
+            piece.make_king()
+            if piece.color == WHITE:
+                self.white_kings += 1
+            if piece.color == RED:
+                self.red_kings += 1
+
+    def remove(self, pieces):
+        for piece in pieces:
+            row, column = piece.row, piece.col
+            self.board[row][column] = None
+            if piece is not None:
+                if piece.color == RED:
+                    self.red_left -= 1
+                else:
+                    self.white_left -= 1
+
+    def get_valid_moves(self, piece):
+        ...
+
     def create_board(self):
         for row in range(ROWS):
             self.board.append([])
@@ -19,6 +51,6 @@ class Board:
                         piece = Piece(row, column, RED)
                         self.board[row].append(piece)
                     else:
-                        self.board[row].append(0)
+                        self.board[row].append(None)
                 else:
-                    self.board[row].append(0)
+                    self.board[row].append(None)
