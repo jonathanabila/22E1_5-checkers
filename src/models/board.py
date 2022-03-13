@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List
 
 from constants import BLACK, COLS, PIECES, RED, ROWS, SQUARE_SIZE, WHITE
@@ -160,6 +161,20 @@ class Board:
 
         return valid_moves
 
+    def get_valid_boards(self, player):
+        boards = []
+        for piece in self.get_pieces(player):
+            for (move_row, move_column), skip in self.get_valid_moves(piece).items():
+                temporary_board = deepcopy(self)
+                temporary_piece = temporary_board.get_piece(piece.row, piece.column)
+                temporary_board.move(temporary_piece, move_row, move_column)
+                if skip:
+                    temporary_board.remove(skip)
+
+                boards.append(temporary_board)
+
+        return boards
+
     @staticmethod
     def draw_squares(window):
         window.fill(BLACK)
@@ -194,3 +209,18 @@ class Board:
                         self.board[row].append(None)
                 else:
                     self.board[row].append(None)
+
+    def get_pieces(self, player):
+        pieces = []
+        for row in self.board:
+            for piece in row:
+                if piece and piece.color == player:
+                    pieces.append(piece)
+        return pieces
+
+    def evaluate(self):
+        return (
+            self.white_left
+            - self.red_left
+            + (self.white_kings * 0.5 - self.red_kings * 0.5)
+        )

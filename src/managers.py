@@ -20,6 +20,17 @@ class GameManager:
         else:
             self.turn = RED
 
+    @property
+    def white_player(self):
+        return WHITE
+
+    @property
+    def red_player(self):
+        return RED
+
+    def is_ai_turn(self):
+        return self.turn == WHITE
+
     def _move(self, row, column):
         piece = self.board.get_piece(row, column)
 
@@ -53,6 +64,10 @@ class GameManager:
             return True
 
         return False
+
+    def select_ai_move(self, board):
+        self.board = board
+        self.change_turn()
 
     def draw_valid_moves(self, moves):
         for move in moves:

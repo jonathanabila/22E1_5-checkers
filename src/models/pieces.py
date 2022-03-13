@@ -20,7 +20,7 @@ class Piece:
         self._calculate_position()
 
     def __repr__(self):
-        return f"color: {self.color}"
+        return f"Piece({self.row}, {self.column}, {self.color})"
 
     @property
     def king(self):
